@@ -827,14 +827,13 @@ window.deleteAnnouncement = async function(id){
   loadAnnouncementsList();
 };
 
-</script>
 window.closeModal = function(id){
   document.getElementById(id).classList.remove('open');
 };
 
 window.handleOverlayClick = function(e, id){
   if(e.target === document.getElementById(id)){
-    closeModal(id);
+    window.closeModal(id);
   }
 };
 
