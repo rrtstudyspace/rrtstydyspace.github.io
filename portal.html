@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RRT Academy — Student Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0A2342;
+  --navy-mid:#0D3B6E;
+  --navy-card:#0f2d52;
+  --green:#10B981;
+  --green-dark:#059669;
+  --gold:#F5C842;
+  --white:#ffffff;
+  --border:rgba(16,185,129,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"DM Sans",sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden;}
+
+/* LOGIN PAGE */
+#login-page{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#0f4c75 100%);
+  padding:20px;position:relative;overflow:hidden;
+}
+#login-page::before{
+  content:"";position:absolute;top:-30%;right:-10%;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(16,185,129,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.grid-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;
+}
+.login-box{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:24px;padding:48px 44px;width:100%;max-width:440px;
+  backdrop-filter:blur(12px);position:relative;z-index:2;
+  box-shadow:0 24px 60px rgba(0,0,0,0.3);
+}
+.login-logo{text-align:center;margin-bottom:32px;}
+.login-logo .star{color:var(--gold);font-size:1.4rem;margin-bottom:6px;display:block;}
+.login-logo .brand{font-family:"Cormorant Garamond",serif;font-size:2.2rem;font-weight:700;color:var(--white);letter-spacing:1px;}
+.login-logo .brand span{color:var(--green);}
+.login-logo .tagline{font-size:0.78rem;color:rgba(255,255,255,0.45);font-style:italic;margin-top:6px;letter-spacing:0.5px;}
+.login-divider{width:40px;height:2px;background:linear-gradient(90deg,var(--green),var(--gold));margin:0 auto 28px;border-radius:2px;}
+.login-title{font-family:"Cormorant Garamond",serif;font-size:1.4rem;font-weight:700;color:var(--white);text-align:center;margin-bottom:6px;}
+.login-sub{font-size:0.85rem;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:32px;}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.form-input{
+  width:100%;padding:14px 16px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;color:var(--white);
+  font-family:"DM Sans",sans-serif;font-size:0.95rem;
+  transition:border 0.2s;outline:none;
+}
+.form-input:focus{border-color:var(--green);background:rgba(16,185,129,0.06);}
+.form-input::placeholder{color:rgba(255,255,255,0.25);}
+.login-btn{
+  width:100%;padding:15px;background:var(--green);color:var(--white);
+  border:none;border-radius:10px;
+  font-family:"DM Sans",sans-serif;font-size:1rem;font-weight:600;
+  cursor:pointer;transition:all 0.25s;margin-top:8px;
+  box-shadow:0 4px 20px rgba(16,185,129,0.3);
+}
+.login-btn:hover{background:var(--green-dark);transform:translateY(-2px);}
+.login-error{
+  background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);
+  color:#fca5a5;border-radius:8px;padding:10px 14px;
+  font-size:0.85rem;margin-top:14px;text-align:center;display:none;
+}
+.login-footer{text-align:center;margin-top:28px;font-size:0.8rem;color:rgba(255,255,255,0.3);}
+.login-footer a{color:var(--green);text-decoration:none;}
+
+/* DASHBOARD */
+#dashboard-page{display:none;min-height:100vh;background:#071a32;}
+.topbar{
+  background:rgba(7,26,50,0.98);border-bottom:1px solid var(--border);
+  padding:0 32px;height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+}
+.topbar-brand{font-family:"Cormorant Garamond",serif;font-size:1.3rem;font-weight:700;color:var(--white);}
+.topbar-brand span{color:var(--green);}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.user-chip{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  padding:7px 14px;border-radius:30px;font-size:0.85rem;
+}
+.user-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;
+}
+.logout-btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.5);padding:7px 16px;border-radius:8px;
+  font-size:0.8rem;cursor:pointer;transition:all 0.2s;
+  font-family:"DM Sans",sans-serif;
+}
+.logout-btn:hover{border-color:rgba(239,68,68,0.4);color:#fca5a5;}
+.dash-content{padding:32px;max-width:1100px;margin:0 auto;}
+.welcome-banner{
+  background:linear-gradient(135deg,var(--navy-mid),#0f4c75);
+  border:1px solid var(--border);border-radius:20px;padding:32px 36px;
+  margin-bottom:28px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;
+}
+.welcome-banner::before{
+  content:"";position:absolute;right:-40px;top:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,200,66,0.08),transparent 70%);
+}
+.welcome-text .greeting{font-size:0.8rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.welcome-text h2{font-family:"Cormorant Garamond",serif;font-size:2rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.welcome-text .details{font-size:0.9rem;color:rgba(255,255,255,0.6);}
+.welcome-text .details span{color:var(--green);font-weight:600;}
+.welcome-badge{
+  background:rgba(16,185,129,0.12);border:1px solid var(--border);
+  border-radius:12px;padding:16px 20px;text-align:center;
+}
+.welcome-badge .badge-icon{font-size:1.8rem;margin-bottom:4px;}
+.welcome-badge .badge-text{font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;}
+.welcome-badge .badge-val{font-family:"Cormorant Garamond",serif;font-size:1.1rem;color:var(--gold);font-weight:700;}
+.sec-label{font-size:0.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:16px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:28px;}
+.class-card{
+  background:var(--navy-card);border:1px solid var(--border);
+  border-radius:16px;padding:28px;position:relative;overflow:hidden;
+}
+.class-card::after{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+}
+.class-card-icon{font-size:2rem;margin-bottom:16px;}
+.class-card h3{font-family:"Cormorant Garamond",serif;font-size:1.2rem;color:var(--white);margin-bottom:6px;}
+.class-card .class-time{font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:20px;}
+.class-card .class-time span{color:var(--gold);font-weight:600;}
+.join-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green);color:var(--white);
+  padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:all 0.25s;font-family:"DM Sans",sans-serif;
+  box-shadow:0 4px 16px rgba(16,185,129,0.25);
+}
+.join-btn:hover{background:var(--green-dark);transform:translateY(-2px);}
+.info-card{background:var(--navy-card);border:1px solid var(--border);border-radius:16px;padding:28px;}
+.info-row{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.info-row:last-child{border-bottom:none;padding-bottom:0;}
+.info-icon{
+  width:38px;height:38px;border-radius:8px;
+  background:rgba(16,185,129,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+.info-label{font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+.info-value{font-size:0.92rem;color:var(--white);font-weight:500;}
+.materials-section{margin-bottom:28px;}
+.materials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.material-card{
+  background:var(--navy-card);border:1px solid var(--border);
+  border-radius:14px;padding:22px 18px;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;display:block;
+}
+.material-card:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.2);}
+.material-icon{font-size:1.8rem;margin-bottom:12px;}
+.material-title{font-size:0.9rem;font-weight:600;color:var(--white);margin-bottom:4px;line-height:1.4;}
+.material-meta{font-size:0.75rem;color:rgba(255,255,255,0.4);}
+.material-tag{display:inline-block;margin-top:10px;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;}
+.tag-coming{background:rgba(245,200,66,0.12);color:var(--gold);}
+.tag-drive{background:rgba(16,185,129,0.12);color:var(--green);}
+.contact-section{
+  background:var(--navy-card);border:1px solid var(--border);
+  border-radius:16px;padding:28px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;margin-bottom:28px;
+}
+.contact-text h3{font-family:"Cormorant Garamond",serif;font-size:1.2rem;color:var(--white);margin-bottom:4px;}
+.contact-text p{font-size:0.85rem;color:rgba(255,255,255,0.5);}
+.wa-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#25D366;color:var(--white);
+  padding:12px 24px;border-radius:10px;font-size:0.9rem;font-weight:600;
+  text-decoration:none;transition:all 0.25s;
+  box-shadow:0 4px 16px rgba(37,211,102,0.25);
+}
+.wa-btn:hover{transform:translateY(-2px);}
+.notice{
+  background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);
+  border-radius:12px;padding:14px 18px;
+  font-size:0.85rem;color:rgba(255,255,255,0.7);
+  margin-bottom:28px;display:flex;align-items:center;gap:10px;
+}
+.dash-footer{
+  text-align:center;padding:28px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  font-size:0.78rem;color:rgba(255,255,255,0.25);margin-top:12px;
+}
+.dash-footer span{color:var(--green);}
+@media(max-width:600px){
+  .topbar{padding:0 16px;}
+  .dash-content{padding:16px;}
+  .welcome-banner{padding:22px 20px;}
+  .welcome-text h2{font-size:1.5rem;}
+  .login-box{padding:32px 24px;}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.4s ease forwards;}
+.fade-up-2{animation:fadeUp 0.4s 0.1s ease both;}
+.fade-up-3{animation:fadeUp 0.4s 0.2s ease both;}
+.fade-up-4{animation:fadeUp 0.4s 0.3s ease both;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="grid-bg"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="star">★</span>
+      <div class="brand">RRT <span>Academy</span></div>
+      <div class="tagline">For Every Student Who Is Willing to Try</div>
+    </div>
+    <div class="login-divider"></div>
+    <div class="login-title">Student Portal</div>
+    <div class="login-sub">Login with your personal credentials</div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" id="username" placeholder="Enter your username" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="password" placeholder="Enter your password"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Login to My Dashboard →</button>
+    <div class="login-error" id="login-error">⚠ Incorrect username or password. Please try again.</div>
+    <div class="login-footer">
+      Need help? <a href="https://wa.me/919961197055" target="_blank">Contact RRT Academy</a>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashboard-page">
+  <div class="topbar">
+    <div class="topbar-brand">RRT <span>Academy</span></div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="avatar-initials">?</div>
+        <span id="topbar-name">Student</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="dash-content">
+
+    <div class="welcome-banner fade-up">
+      <div class="welcome-text">
+        <div class="greeting">Welcome Back</div>
+        <h2 id="dash-name">Hello, Student! 👋</h2>
+        <div class="details">
+          <span id="dash-class">—</span> &nbsp;·&nbsp; <span id="dash-subject">—</span>
+        </div>
+      </div>
+      <div class="welcome-badge">
+        <div class="badge-icon">📚</div>
+        <div class="badge-text">Academic Year</div>
+        <div class="badge-val">2026 – 27</div>
+      </div>
+    </div>
+
+    <div class="notice fade-up-2">
+      <span>📢</span>
+      <span>Your class materials and Google Drive folder will be shared here by your teacher. Check back soon!</span>
+    </div>
+
+    <div class="sec-label fade-up-2" style="margin-bottom:12px;">📢 Announcements</div>
+    <div id="announcements-wrap" class="fade-up-2" style="margin-bottom:28px;">
+      <div style="color:rgba(255,255,255,0.35);font-size:0.85rem;padding:16px 0;">Loading announcements...</div>
+    </div>
+
+    <div class="sec-label fade-up-2">Today's Class</div>
+    <div class="cards-grid fade-up-2">
+      <div class="class-card">
+        <div class="class-card-icon">📹</div>
+        <h3 id="class-subject-title">Mathematics Class</h3>
+        <div class="class-time">Your teacher will share the class time · <span id="class-std-label">—</span></div>
+        <button class="join-btn" onclick="joinClass()">▶ Join My Class</button>
+      </div>
+      <div class="info-card">
+        <div class="sec-label" style="margin-bottom:14px;">My Details</div>
+        <div class="info-row">
+          <div class="info-icon">🎓</div>
+          <div><div class="info-label">Student Name</div><div class="info-value" id="info-name">—</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">📖</div>
+          <div><div class="info-label">Standard</div><div class="info-value" id="info-class">—</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🔬</div>
+          <div><div class="info-label">Subject</div><div class="info-value" id="info-subject">—</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏫</div>
+          <div><div class="info-label">Academy</div><div class="info-value">RRT Academy · Kerala</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="materials-section fade-up-3">
+      <div class="sec-label">Study Materials</div>
+      <div class="materials-grid" id="materials-grid"></div>
+    </div>
+
+    <div class="contact-section fade-up-4">
+      <div class="contact-text">
+        <h3>Need Help? Reach Your Teacher</h3>
+        <p>Message Remya Ma'am directly on WhatsApp for any doubts or queries.</p>
+      </div>
+      <a href="https://wa.me/919961197055?text=Hello%20Remya%20Ma%27am!%20I%20am%20an%20RRT%20Academy%20student%20and%20I%20need%20help." target="_blank" class="wa-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Message Ma'am
+      </a>
+    </div>
+
+    <div class="dash-footer">
+      © 2026 <span>RRT Academy</span> · Kerala, India · Remya Bhaskaran &nbsp;·&nbsp;
+      <a href="index.html" style="color:var(--green);text-decoration:none;">Back to Website</a>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDTwUxWc3wpCIWBbh4AYstlZ8V2QNzLMec",
+  authDomain: "rrt-academy.firebaseapp.com",
+  projectId: "rrt-academy",
+  storageBucket: "rrt-academy.firebasestorage.app",
+  messagingSenderId: "226576267542",
+  appId: "1:226576267542:web:6683f68c99a69840fa7837"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Load announcements for a student
+async function loadAnnouncements(username){
+  try{
+    const q = query(collection(db,'announcements'), orderBy('createdAt','desc'), limit(10));
+    const snap = await getDocs(q);
+    const all = [];
+    snap.forEach(d => all.push({id:d.id,...d.data()}));
+    // filter: show if targetAll or targets includes this username
+    const relevant = all.filter(a => a.targetAll || (a.targets && a.targets.includes(username)));
+    renderAnnouncements(relevant);
+  } catch(e){ console.error(e); }
+}
+
+function renderAnnouncements(items){
+  const wrap = document.getElementById('announcements-wrap');
+  if(!wrap) return;
+  if(!items.length){
+    wrap.innerHTML = `<div style="color:rgba(255,255,255,0.35);font-size:0.85rem;padding:16px 0;">No announcements yet. Check back soon!</div>`;
+    return;
+  }
+  wrap.innerHTML = items.map(a => {
+    const date = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
+    return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(16,185,129,0.15);border-radius:12px;padding:16px 18px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:0.72rem;background:rgba(245,200,66,0.15);color:#F5C842;padding:3px 10px;border-radius:50px;font-weight:600;letter-spacing:0.5px;">📢 ${a.type||'Announcement'}</span>
+        <span style="font-size:0.72rem;color:rgba(255,255,255,0.35);">${date}</span>
+      </div>
+      <div style="font-size:0.92rem;color:rgba(255,255,255,0.85);line-height:1.6;">${a.message}</div>
+    </div>`;
+  }).join('');
+}
+
+// Load materials from Firestore for a student
+async function loadMaterials(username, fallbackMaterials){
+  try{
+    const snap = await getDocs(collection(db,'materials'));
+    const all = [];
+    snap.forEach(d => all.push({id:d.id,...d.data()}));
+    const relevant = all.filter(m => m.targetAll || (m.targets && m.targets.includes(username)));
+    if(relevant.length){
+      renderMaterials(relevant.map(m=>({title:m.title,meta:m.meta||'',icon:m.icon||'📄',tag:m.link?'drive':'coming',link:m.link||'#'})));
+    } else {
+      renderMaterials(fallbackMaterials);
+    }
+  } catch(e){ renderMaterials(fallbackMaterials); }
+}
+
+window._loadFirebase = function(username, fallbackMaterials){
+  loadAnnouncements(username);
+  loadMaterials(username, fallbackMaterials);
+};
+
+const students = {
+  "rrt.rithika":      { password:"rrt2025", name:"Rithika",      stdClass:"Standard 7",    subject:"Mathematics",             jitsiRoom:"rrt-rithika",      materials:[{title:"Chapter Notes",meta:"Maths · Std 7",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 7",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 7",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.devatheertha": { password:"rrt2025", name:"Devatheertha", stdClass:"Standard 7",    subject:"Mathematics",             jitsiRoom:"rrt-devatheertha", materials:[{title:"Chapter Notes",meta:"Maths · Std 7",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 7",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 7",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.aardra":       { password:"rrt2025", name:"Aardra",       stdClass:"Standard 7",    subject:"Mathematics",             jitsiRoom:"rrt-aardra",       materials:[{title:"Chapter Notes",meta:"Maths · Std 7",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 7",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 7",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.sravika":      { password:"rrt2025", name:"Sravika",      stdClass:"Standard 7",    subject:"Mathematics",             jitsiRoom:"rrt-sravika",      materials:[{title:"Chapter Notes",meta:"Maths · Std 7",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 7",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 7",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.gouri":        { password:"rrt2025", name:"Gouri",        stdClass:"Standard 7",    subject:"Mathematics",             jitsiRoom:"rrt-gouri",        materials:[{title:"Chapter Notes",meta:"Maths · Std 7",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 7",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 7",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.shivashankar": { password:"rrt2025", name:"Shivashankar", stdClass:"Standard 10",   subject:"Mathematics",             jitsiRoom:"rrt-shivashankar", materials:[{title:"Chapter Notes",meta:"Maths · Std 10",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Std 10",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Std 10",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.alwin":        { password:"rrt2025", name:"Alwin",        stdClass:"Plus One (+1)", subject:"Mathematics",             jitsiRoom:"rrt-alwin",        materials:[{title:"Chapter Notes",meta:"Maths · Plus One",icon:"📄",tag:"coming",link:"#"},{title:"Practice Worksheets",meta:"Maths · Plus One",icon:"📝",tag:"coming",link:"#"},{title:"Video Lessons",meta:"Maths · Plus One",icon:"🎬",tag:"coming",link:"#"}] },
+  "rrt.saathwika":    { password:"rrt2025", name:"Saathwika",    stdClass:"Standard 6",    subject:"English (Vacation Class)",jitsiRoom:"rrt-saathwika",    materials:[{title:"Reading Materials",meta:"English · Std 6",icon:"📄",tag:"coming",link:"#"},{title:"Practice Exercises",meta:"English · Std 6",icon:"📝",tag:"coming",link:"#"}] },
+};
+
+let currentStudent = null;
+
+document.getElementById('password').addEventListener('keypress',function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('username').addEventListener('keypress',function(e){ if(e.key==='Enter') doLogin(); });
+
+function doLogin(){
+  const user = document.getElementById('username').value.trim().toLowerCase();
+  const pass = document.getElementById('password').value.trim();
+  const error = document.getElementById('login-error');
+  if(students[user] && students[user].password === pass){
+    currentStudent = students[user];
+    error.style.display = 'none';
+    showDashboard(currentStudent, user);
+  } else {
+    error.style.display = 'block';
+    document.getElementById('password').value = '';
+  }
+}
+window.doLogin = doLogin;
+
+function doLogout(){
+  currentStudent = null;
+  document.getElementById('dashboard-page').style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+}
+window.doLogout = doLogout;
+
+function showDashboard(s, user){
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('dashboard-page').style.display = 'block';
+  document.getElementById('dash-name').textContent = 'Hello, ' + s.name + '! 👋';
+  document.getElementById('dash-class').textContent = s.stdClass;
+  document.getElementById('dash-subject').textContent = s.subject;
+  document.getElementById('topbar-name').textContent = s.name;
+  document.getElementById('avatar-initials').textContent = s.name.charAt(0).toUpperCase();
+  document.getElementById('info-name').textContent = s.name;
+  document.getElementById('info-class').textContent = s.stdClass;
+  document.getElementById('info-subject').textContent = s.subject;
+  document.getElementById('class-subject-title').textContent = s.subject + ' Class';
+  document.getElementById('class-std-label').textContent = s.stdClass;
+  renderMaterials(s.materials);
+  if(window._loadFirebase) window._loadFirebase(user, s.materials);
+}
+
+function renderMaterials(materials){
+  const grid = document.getElementById('materials-grid');
+  grid.innerHTML = materials.map(m=>`
+    <a class="material-card" href="${m.link==='#'?'javascript:void(0)':m.link}" ${m.link!=='#'?'target="_blank"':''}>
+      <div class="material-icon">${m.icon}</div>
+      <div class="material-title">${m.title}</div>
+      <div class="material-meta">${m.meta}</div>
+      <span class="material-tag ${m.tag==='coming'?'tag-coming':'tag-drive'}">
+        ${m.tag==='coming'?'⏳ Coming Soon':'📁 Open in Drive'}
+      </span>
+    </a>`).join('');
+}
+window.renderMaterials = renderMaterials;
+
+function joinClass(){
+  if(!currentStudent) return;
+  const url = 'https://meet.jit.si/' + currentStudent.jitsiRoom + '#userInfo.displayName="' + encodeURIComponent(currentStudent.name) + '"';
+  window.open(url,'_blank');
+}
+window.joinClass = joinClass;
+</script>
+</body>
+</html>
